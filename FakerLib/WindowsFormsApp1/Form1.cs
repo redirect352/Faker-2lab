@@ -22,6 +22,7 @@ namespace WindowsFormsApp1
         {
             Faker faker = new Faker();
             faker.Create<MyClass>(textBox1);
+
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

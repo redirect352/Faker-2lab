@@ -12,6 +12,9 @@ namespace FakerLib
     public class Faker
     {
         Dictionary<Type, IGenerator> Generators = new Dictionary<Type, IGenerator>();
+        Stack<Type> nestedTypes = new Stack<Type>();
+
+
         public Faker()
         {
             Type mainInterface = typeof(IGenerator);
@@ -43,12 +46,18 @@ namespace FakerLib
 
         public T Create<T>(TextBox text)
         {
+            Type type = typeof(T);
+            nestedTypes.Push(type);
 
-
+            T tmp = (T)CheckGenerators(type);
+            if (tmp !=null)
+            {
+                nestedTypes.Pop();
+                return tmp;
+            }
 
             T result = default(T);
-            Type type = typeof(T);
-
+                 
             try
             {
                 result = Activator.CreateInstance<T>();
@@ -59,6 +68,7 @@ namespace FakerLib
                 var typeConstructors = type.GetConstructors();
                 if (typeConstructors.Count()==0)
                 {
+                    nestedTypes.Pop();
                     return result;
                 }
                 foreach (ConstructorInfo constructor in typeConstructors)
@@ -80,6 +90,7 @@ namespace FakerLib
             }
             catch (Exception ex)
             {
+                nestedTypes.Pop();
                 throw ex;
             }
 
@@ -102,7 +113,23 @@ namespace FakerLib
                 }
             }
 
+
+            nestedTypes.Pop();
             return result;
+        }
+
+
+        private object CheckGenerators( Type destinationType)
+        {
+            
+            foreach (Type t in Generators.Keys)
+            {
+                if (Generators[t].ResultType == destinationType)
+                {
+                    return Generators[t].Generate();
+                }
+            }
+            return null;
         }
 
         private object GenerateValue(Type valueType)
@@ -112,10 +139,9 @@ namespace FakerLib
             {
                 value = Generators[valueType].Generate();
             }
-            else
-            {
-                //Добавить Faker
-                value =  GetDefault(valueType);
+            else if(!nestedTypes.Contains(valueType))
+            {        
+              value = this.GetType().GetMethod("Create").MakeGenericMethod(valueType).Invoke(this, new object[] { null});
             }
 
             return value;
@@ -138,7 +164,7 @@ namespace FakerLib
     public class MyClass
     {
 
-        private MyClass() { }
+        public MyClass() { }
         public MyClass(int k, double par2, string ferr2)
         {
             field1 = k;
@@ -147,14 +173,23 @@ namespace FakerLib
         }
 
         public int field1 = 0;
-        private double field23 = 0;
+        public double field23 = 0;
         public object field3 ;
-
-        private TextBox Text;
+        public MyClass2 Class2;
+        public MyClass classMy;
 
         public int Property1 { get; set; }
         public object PropertyObject { get; set; }
         private object PrivateProperty { get; set; }
 
     }
+
+    public class MyClass2
+    {
+        public int count;
+        public string str;
+        public MyClass classMy { get; set; }
+
+    }
+
 }
