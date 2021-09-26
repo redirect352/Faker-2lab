@@ -11,20 +11,23 @@ namespace FakerLib
 {
     public class Faker
     {
-        Dictionary<Type, IGenerator> Generators = new Dictionary<Type, IGenerator>();
+
+        private Dictionary<Type, IGenerator> Generators = new Dictionary<Type, IGenerator>();
+        private Dictionary<Type, ICollectionGenerator> CollectionsGenerators = new Dictionary<Type, ICollectionGenerator>();
+        
         Stack<Type> nestedTypes = new Stack<Type>();
 
 
         public Faker()
         {
-            Type mainInterface = typeof(IGenerator);
+            Type mainInterface = typeof(IGenerator),
+                 collectionsInterface = typeof(ICollectionGenerator);
             try
             {
 
                 Assembly assembly = Assembly.GetExecutingAssembly();
                 Type[] types = assembly.GetTypes();
                 
-                int k = 0;
                 for (int i = 0; i < types.Length; i++)
                 {
 
@@ -33,8 +36,16 @@ namespace FakerLib
 
                         IGenerator generator = (IGenerator)Activator.CreateInstance(types[i]);
                         Generators.Add(generator.ResultType,generator);
-                        k++;
+                        continue;
                     }
+                    if (collectionsInterface.IsAssignableFrom(types[i]) && collectionsInterface != types[i])
+                    {
+
+                        ICollectionGenerator collectionGenerator = (ICollectionGenerator)Activator.CreateInstance(types[i]);
+                        CollectionsGenerators.Add(collectionGenerator.CollectionType, collectionGenerator);
+                        continue;
+                    }
+
                 }
             }
             catch
@@ -44,8 +55,10 @@ namespace FakerLib
 
         }
 
-        public T Create<T>(TextBox text)
+        public T Create<T>()
         {
+
+
             Type type = typeof(T);
             nestedTypes.Push(type);
 
@@ -82,7 +95,6 @@ namespace FakerLib
                       
                         values.Add(GenerateValue(parameter.ParameterType));
                     }
-                    text.Text = text.Text + "\r\n";
                     
                     result = (T)constructor.Invoke(values.ToArray());
                 }
@@ -128,7 +140,24 @@ namespace FakerLib
                 {
                     return Generators[t].Generate();
                 }
+
             }
+            if (!destinationType.IsGenericType)
+                return null;
+            foreach (Type t in CollectionsGenerators.Keys)
+            {
+                
+                if (CollectionsGenerators[t].CollectionType == destinationType.GetGenericTypeDefinition())
+                {
+                    var type = CollectionsGenerators[t].GetType();
+                    var Method = type.GetMethod("Generate");
+                    var MemberType = destinationType.GenericTypeArguments.First();
+                    var res = (object)Method.MakeGenericMethod(MemberType).Invoke(CollectionsGenerators[t], new object[] { this });
+                    return res;
+                }
+
+            }
+
             return null;
         }
 
@@ -141,7 +170,7 @@ namespace FakerLib
             }
             else if(!nestedTypes.Contains(valueType))
             {        
-              value = this.GetType().GetMethod("Create").MakeGenericMethod(valueType).Invoke(this, new object[] { null});
+              value = this.GetType().GetMethod("Create").MakeGenericMethod(valueType).Invoke(this, null);
             }
 
             return value;

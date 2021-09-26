@@ -42,12 +42,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CollectionGenerator\ICollectionsGenerator.cs" />
+    <Compile Include="CollectionGenerator\ListGenerator.cs" />
     <Compile Include="Faker.cs" />
-    <Compile Include="Generator\DoubleGenerator.cs" />
-    <Compile Include="Generator\IntGenerator.cs" />
-    <Compile Include="Generator\IGenerator.cs" />
-    <Compile Include="Generator\ObjectGenerator.cs" />
-    <Compile Include="Generator\StringGenerator.cs" />
+    <Compile Include="SingleObjectGenerator\DoubleGenerator.cs" />
+    <Compile Include="SingleObjectGenerator\IntGenerator.cs" />
+    <Compile Include="SingleObjectGenerator\IGenerator.cs" />
+    <Compile Include="SingleObjectGenerator\ObjectGenerator.cs" />
+    <Compile Include="SingleObjectGenerator\StringGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
