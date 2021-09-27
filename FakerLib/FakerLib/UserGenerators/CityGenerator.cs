@@ -27,5 +27,10 @@ namespace FakerLib.Generator
             return cityes[ind];
         }
 
+        public static bool IsGeneratedHere(string s)
+        {
+            return cityes.Contains(s);
+        }
+
     }
 }

@@ -21,7 +21,7 @@ namespace FakerLib.Generator
         public object Generate<T>( Faker faker)
         {
             List<T> resultList = new List<T>();
-            int count = rnd.Next(0,10);
+            int count = rnd.Next(1,10);
             for (int i = 0; i< count; i++)
             {
                 resultList.Add(faker.Create<T>());

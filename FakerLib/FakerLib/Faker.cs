@@ -20,6 +20,12 @@ namespace FakerLib
         Stack<Type> nestedTypes = new Stack<Type>();
 
 
+        public Faker():this(null)
+        {
+            
+
+        }
+
         public Faker(FakerConfig config3)
         {
             config = config3;
@@ -245,42 +251,6 @@ namespace FakerLib
 
     }
 
-    public class MyClass
-    {
-
-        public MyClass() { }
-        public MyClass(int k, double par2, string ferr2)
-        {
-            field1 = k;
-            field23 = par2;
-            City = ferr2;
-        }
-
-        public int field1 = 0;
-        public double field23 = 0;
-        public string City { get; set; }
-        public string City2 { get; set; }
-        public MyClass2 Class2;
-        public MyClass classMy;
-
-        public IList<int> ggg;
-
-
-
-        public int Property1 { get; set; }
-        public object PropertyObject { get; set; }
-        private object PrivateProperty { get; set; }
-
-
-
-    }
-
-    public class MyClass2
-    {
-        public int count;
-        public string str;
-        public MyClass classMy { get; set; }
-
-    }
+    
 
 }
