@@ -43,14 +43,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CollectionGenerator\ICollectionsGenerator.cs" />
+    <Compile Include="CollectionGenerator\IListGenerator.cs" />
     <Compile Include="CollectionGenerator\ListGenerator.cs" />
     <Compile Include="Faker.cs" />
+    <Compile Include="FakerConfig.cs" />
     <Compile Include="SingleObjectGenerator\DoubleGenerator.cs" />
+    <Compile Include="SingleObjectGenerator\FloatGenerator.cs" />
     <Compile Include="SingleObjectGenerator\IntGenerator.cs" />
     <Compile Include="SingleObjectGenerator\IGenerator.cs" />
+    <Compile Include="SingleObjectGenerator\LongGenerator.cs" />
     <Compile Include="SingleObjectGenerator\ObjectGenerator.cs" />
     <Compile Include="SingleObjectGenerator\StringGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UserGenerators\CityGenerator.cs" />
+    <Compile Include="UserGenerators\ICustomGenerator.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -14,12 +14,16 @@ namespace FakerLib
 
         private Dictionary<Type, IGenerator> Generators = new Dictionary<Type, IGenerator>();
         private Dictionary<Type, ICollectionGenerator> CollectionsGenerators = new Dictionary<Type, ICollectionGenerator>();
-        
+        private FakerConfig config = null;
+
+
         Stack<Type> nestedTypes = new Stack<Type>();
 
 
-        public Faker()
+        public Faker(FakerConfig config3)
         {
+            config = config3;
+
             Type mainInterface = typeof(IGenerator),
                  collectionsInterface = typeof(ICollectionGenerator);
             try
@@ -42,7 +46,10 @@ namespace FakerLib
                     {
 
                         ICollectionGenerator collectionGenerator = (ICollectionGenerator)Activator.CreateInstance(types[i]);
-                        CollectionsGenerators.Add(collectionGenerator.CollectionType, collectionGenerator);
+                        foreach (Type key  in collectionGenerator.CollectionType)
+                        {
+                            CollectionsGenerators.Add(key, collectionGenerator);
+                        }            
                         continue;
                     }
 
@@ -55,6 +62,9 @@ namespace FakerLib
 
         }
 
+        
+
+
         public T Create<T>()
         {
 
@@ -62,11 +72,11 @@ namespace FakerLib
             Type type = typeof(T);
             nestedTypes.Push(type);
 
-            T tmp = (T)CheckGenerators(type);
+            object tmp = CheckGenerators(type);
             if (tmp !=null)
             {
                 nestedTypes.Pop();
-                return tmp;
+                return (T)tmp;
             }
 
             T result = default(T);
@@ -106,7 +116,12 @@ namespace FakerLib
                 throw ex;
             }
 
+            if (type.IsValueType)
 
+            {
+                nestedTypes.Pop();
+                return result;
+            }
 
             foreach (FieldInfo f in type.GetFields())
             {
@@ -123,6 +138,47 @@ namespace FakerLib
                     object propertyValue = GenerateValue(property.PropertyType);
                     property.SetValue(result,propertyValue);
                 }
+            }
+
+            if (config ==null)
+            {
+                nestedTypes.Pop();
+                return result;
+            }
+
+            foreach (FieldInfo f in type.GetFields())
+            {
+                object defaultValue =  f.GetValue(result);
+                if (defaultValue == null)
+                    continue;
+                object newValue = config.GetType().GetMethod("CheckConfig").MakeGenericMethod(typeof(T),f.FieldType).
+                                    Invoke(config,new object[] { defaultValue,result });
+                    
+
+                if (newValue != null)
+                {
+                    f.SetValue(result, newValue);
+                }
+
+            }
+
+            foreach (PropertyInfo property in type.GetProperties())
+            {
+
+                if (!property.CanWrite)
+                {
+                    continue;
+                }
+                object defaultValue2 = property.GetValue(result);
+                if (defaultValue2 == null)
+                    continue;
+                object newValue = config.GetType().GetMethod("CheckConfig").MakeGenericMethod(typeof(T), property.PropertyType).
+                                   Invoke(config, new object[] { defaultValue2, result });
+                if (newValue != null)
+                {
+                    property.SetValue(result, newValue);
+                }
+
             }
 
 
@@ -145,9 +201,8 @@ namespace FakerLib
             if (!destinationType.IsGenericType)
                 return null;
             foreach (Type t in CollectionsGenerators.Keys)
-            {
-                
-                if (CollectionsGenerators[t].CollectionType == destinationType.GetGenericTypeDefinition())
+            {     
+                if (CollectionsGenerators[t].CollectionType.Contains(destinationType.GetGenericTypeDefinition()))
                 {
                     var type = CollectionsGenerators[t].GetType();
                     var Method = type.GetMethod("Generate");
@@ -198,18 +253,25 @@ namespace FakerLib
         {
             field1 = k;
             field23 = par2;
-            field3 = ferr2;
+            City = ferr2;
         }
 
         public int field1 = 0;
         public double field23 = 0;
-        public object field3 ;
+        public string City { get; set; }
+        public string City2 { get; set; }
         public MyClass2 Class2;
         public MyClass classMy;
+
+        public IList<int> ggg;
+
+
 
         public int Property1 { get; set; }
         public object PropertyObject { get; set; }
         private object PrivateProperty { get; set; }
+
+
 
     }
 

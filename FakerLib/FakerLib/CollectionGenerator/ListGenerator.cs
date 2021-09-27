@@ -9,9 +9,10 @@ namespace FakerLib.Generator
     public class ListGenerator : ICollectionGenerator
     {
         private Random rnd = new Random(DateTime.Now.Millisecond);
-        private Type collectionType = typeof(List<>);
+        private Type[] collectionType = new Type[] { typeof(List<>), typeof(IEnumerable<>),
+                                                     typeof(IList<>), typeof(ICollection<>)};
 
-        public Type CollectionType
+        public Type[] CollectionType
         {
             get { return collectionType; }
         }

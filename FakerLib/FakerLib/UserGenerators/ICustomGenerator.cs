@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace FakerLib.Generator
 {
-    interface ICollectionGenerator
+    public interface ICustomGenerator
     {
-        object Generate<T>( Faker faker);
-        Type[] CollectionType { get; }
+        object Generate();
+        Type ResultType { get; }
     }
+
 }

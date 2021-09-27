@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using FakerLib;
 using FakerLib.Generator;
+using System.Linq.Expressions;
 
 
 namespace WindowsFormsApp1
@@ -22,18 +23,28 @@ namespace WindowsFormsApp1
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            Faker faker = new Faker();
-            List<MyClass> f = faker.Create<List<MyClass>>();
 
 
-            int j = 0;
-            foreach (MyClass i in f)
-            {
-                textBox1.Text = textBox1.Text + "ind: "+j.ToString() + " value:" +i.ToString()+"\r\n";
-                j++;
-            }
+            FakerConfig config = new FakerConfig();
+
+            config.Add<MyClass,string,CityGenerator>( MyClass=>MyClass.City);
+            config.Add<MyClass, string, CityGenerator>(MyClass => MyClass.City2);
 
 
+            Faker faker = new Faker(config);
+            MyClass s = faker.Create<MyClass>();
+
+
+           
+            //int j = 0;
+            //foreach (MyClass i in f)
+            //{
+            //    textBox1.Text = textBox1.Text + "ind: "+j.ToString() + " value:" +i.ToString()+"\r\n";
+            //    j++;
+            //}
+            MyClass myClass = faker.Create<MyClass>();
+
+            textBox1.Text = textBox1.Text;
 
 
             //faker.Create<MyClass>(textBox1);

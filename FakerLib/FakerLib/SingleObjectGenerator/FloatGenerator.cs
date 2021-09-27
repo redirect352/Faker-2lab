@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace FakerLib.Generator
 {
-    class DoubleGenerator : IGenerator
+    class FloatGenerator: IGenerator
     {
         private Random rand = new Random(DateTime.Now.Millisecond);
-        private Type resultType = typeof(double);
+        private Type resultType = typeof(float);
 
         public Type ResultType
         {
@@ -21,14 +21,15 @@ namespace FakerLib.Generator
         }
 
         public object Generate()
-        { 
-            double result = rand.NextDouble()*rand.Next();
+        {
+            float result = (float)(rand.NextDouble() * rand.Next());
 
             if (rand.Next() % 2 == 0)
                 result = -result;
-           
+
             return result;
         }
+
 
     }
 }
